@@ -5,6 +5,7 @@ import App from '.';
 
 const mapStateToProps = (state: IRootState) => ({
     init: state.app.init,
+    loaded: state.app.loaded,
 });
 
 const mapDispatchToProps = {

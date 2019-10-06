@@ -14,27 +14,21 @@ export const composeFunc = () => {
         })();
 }
 
-// load middleware services
-loadServices();
-
 // third-party enhancers
 const libEnhancers = [
     thunk,
 ].map(mw => applyMiddleware(mw));
 
-// custom enhancers
-const customEnhancers = [
-    (api: MiddlewareAPI) =>
-    (next: Dispatch) =>
-    (action: IActionType<any>) => {
-        // push the action through the redux pipe
-        next(action);
-        // non-blocking asynchronous call to middleware service
-        middlewareServiceManager.execute(api)(action);
-    }
-].map(mw => applyMiddleware(mw));
+// load services
+loadServices();
 
-const composedEnhancers = composeFunc().apply(null, [...libEnhancers, ...customEnhancers]);
+// custom middleware action handlers
+const actionHandlers = applyMiddleware((api: MiddlewareAPI) => (next: Dispatch) => (action: IActionType<any>) => {
+    next(action);
+    middlewareServiceManager.execute(api)(action);
+});
+
+const composedEnhancers = composeFunc().apply(null, [...libEnhancers, actionHandlers]);
 
 const store = createStore(rootReducer, {}, composedEnhancers);
 
