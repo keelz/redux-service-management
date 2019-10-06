@@ -7,8 +7,8 @@ import { MiddlewareServiceAction, MiddlewareServiceContainer } from "../Middlewa
 const appHandleInit: MiddlewareServiceAction = ({ dispatch }: MiddlewareAPI) =>
     async (action: IActionType<IAppState>) => {
         await new Promise((resolve) => {
+            console.log('app init');
             setTimeout(() => {
-                console.log('app init', action);
                 appSetLoadedAction(true)(dispatch);
                 resolve();
             }, 3000);
