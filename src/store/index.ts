@@ -1,11 +1,14 @@
-import { applyMiddleware, createStore, compose, MiddlewareAPI, Dispatch } from 'redux';
+import { applyMiddleware, createStore, compose } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
-import { IActionType } from './types';
-import middlewareServiceManager from './MiddlewareManager';
+import { serviceMiddleware } from './MiddlewareManager';
 import loadServices from './services/index.service';
 
-export const composeFunc = () => {
+// load services
+loadServices();
+
+// define compose func to support redux development tools
+const composeFunc = () => {
     return process.env.NODE_ENV === 'production'
         ? compose
         : (() => {
@@ -14,22 +17,16 @@ export const composeFunc = () => {
         })();
 }
 
-// third-party enhancers
-const libEnhancers = [
+// define middleware
+const middleware = [
     thunk,
+    serviceMiddleware,
 ].map(mw => applyMiddleware(mw));
 
-// load services
-loadServices();
+// compose all middleware together
+const composedMiddleware = composeFunc().apply(null, middleware);
 
-// custom middleware action handlers
-const actionHandlers = applyMiddleware((api: MiddlewareAPI) => (next: Dispatch) => (action: IActionType<any>) => {
-    next(action);
-    middlewareServiceManager.execute(api)(action);
-});
-
-const composedEnhancers = composeFunc().apply(null, [...libEnhancers, actionHandlers]);
-
-const store = createStore(rootReducer, {}, composedEnhancers);
+// instantiate store object with root reducer, default state, and composed middlewares
+const store = createStore(rootReducer, {}, composedMiddleware);
 
 export default store;

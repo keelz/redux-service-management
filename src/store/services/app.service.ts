@@ -4,25 +4,25 @@ import { IAppState } from "../models/app.model";
 import { APP_SET_INIT, appSetLoadedAction, APP_SET_LOADED } from "../reducers/app.reducer";
 import { MiddlewareServiceAction, MiddlewareServiceContainer } from "../MiddlewareManager";
 
-const appHandleInit: MiddlewareServiceAction = ({ dispatch }: MiddlewareAPI) =>
-    async (action: IActionType<IAppState>) => {
+const appHandleSetInit: MiddlewareServiceAction = ({ dispatch }: MiddlewareAPI) =>
+    async (_action: IActionType<IAppState>) => {
         await new Promise((resolve) => {
-            console.log('app init');
             setTimeout(() => {
+                console.log('app finished initializing')
                 appSetLoadedAction(true)(dispatch);
                 resolve();
             }, 3000);
         });
     }
 
-const appHandleLoaded: MiddlewareServiceAction = (_api: MiddlewareAPI) =>
+const appHandleSetLoaded: MiddlewareServiceAction = (_api: MiddlewareAPI) =>
     async (_action: IActionType<IAppState>) => {
-        console.log('app is loaded');
+        console.log('app has finished loading');
     }
 
 const appServices: MiddlewareServiceContainer = [
-    [APP_SET_INIT, appHandleInit],
-    [APP_SET_LOADED, appHandleLoaded],
+    [APP_SET_INIT, appHandleSetInit],
+    [APP_SET_LOADED, appHandleSetLoaded],
 ]
 
 export default appServices;

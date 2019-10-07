@@ -1,4 +1,4 @@
-import { MiddlewareAPI } from "redux";
+import { MiddlewareAPI, Dispatch } from "redux";
 import { IActionType } from "./types";
 
 export type MiddlewareServiceContainer = [string, MiddlewareServiceAction][];
@@ -32,6 +32,13 @@ class MiddlewareServiceManager implements IMiddlewareServiceManager {
     }
 }
 
-const middlewareServiceManager = new MiddlewareServiceManager();
+export const serviceMiddleware = (api: MiddlewareAPI) =>
+    (next: Dispatch) =>
+    (action: IActionType<any>) => {
+        next(action);
+        serviceManager.execute(api)(action);
+    }
 
-export default middlewareServiceManager;
+const serviceManager = new MiddlewareServiceManager();
+
+export default serviceManager;

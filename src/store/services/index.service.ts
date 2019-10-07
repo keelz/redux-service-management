@@ -1,9 +1,9 @@
-import middlewareServiceManager from "../MiddlewareManager";
+import serviceManager from "../MiddlewareManager";
 import appServices from "./app.service";
 
-// this could probably use some work...
+// add all services into service manager
 const loadServices = () => {
-    appServices.forEach(service => middlewareServiceManager.addService(service[0], service[1]));
+    appServices.forEach(service => serviceManager.addService(service[0], service[1]));
 }
 
 export default loadServices;
